@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+	<title>Guess The Verse</title>	
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>	
+	<script type="text/javascript">	
+	window.elobject = {};
+	elobject.sizes = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
+	elobject.names = ['الفاتحة','البقرة','آل عمران','النساء','المائدة','الأنعام','الأعراف','الأنفال','التوبة','يونس','هود','يوسف','الرعد','إبراهيم','الحجر','النحل','الإسراء','الكهف','مريم','طه','الأنبياء','الحج','المؤمنون','النور','الفرقان','الشعراء','النمل','القصص','العنكبوت','الروم','لقمان','السجدة','الأحزاب','سبأ','فاطر','يس','الصافات','ص','الزمر','غافر','فصلت','الشورى','الزخرف','الدخان','الجاثية','الأحقاف','محمد','الفتح','الحجرات','ق','الذاريات','الطور','النجم','القمر','الرحمن','الواقعة','الحديد','المجادلة','الحشر','الممتحنة','الصف','الجمعة','المنافقون','التغابن','الطلاق','التحريم','الملك','القلم','الحاقة','المعارج','نوح','الجن','المزمل','المدثر','القيامة','الإنسان','المرسلات','النبأ','النازعات','عبس','التكوير','الانفطار','المطففين','الانشقاق','البروج','الطارق','الأعلى','الغاشية','الفجر','البلد','الشمس','الليل','الضحى','الشرح','التين','العلق','القدر','البينة','الزلزلة','العاديات','القارعة','التكاثر','العصر','الهمزة','الفيل','قريش','الماعون','الكوثر','الكافرون','النصر','المسد','الإخلاص','الفلق','الناس'];
+
+	function start() {
+	document.body.onkeydown= showAns;
+	randomize();
+	}
+
+	function randomize () {
+	ResetUI();
+		
+	elsora = Math.floor((Math.random() * 1000)) % 114 + 1;
+	elaya = Math.floor((Math.random() * 1000)) % elobject.sizes[elsora-1] + 1;
+	elobject.sora = (elsora+1)*1759;
+	elobject.aya = (elaya+2)*5719;
+
+	var elimg = document.getElementById('elimg');
+	elimg.src = GetImageSource(elsora, elaya);
+
+	var soraLink = document.getElementById('elsora');
+	soraLink.innerHTML = elobject.names[elsora-1];	
+	soraLink.href = "http://quran.com/" + (elsora);
+	soraLink.target = "_blank";
+
+    var player = document.getElementById('player');
+    player.src= GetMP3Source(elsora, elaya);
+
+    isLastVerse(elsora, elaya);
+	}
+
+function GetImageSource(sora, aya)
+{
+	return 'http://c00022506.cdn1.cloudfiles.rackspacecloud.com/' + sora + '_' + aya + '.png';	
+}
+function GetMP3Source(sora, aya)
+{
+	return 'http://www.everyayah.com/data/Abdul_Basit_Murattal_192kbps/' + pad(sora) + pad(aya) + '.mp3';
+}
+function pad(num) {
+    var s = num+"";
+    while (s.length < 3) s = "0" + s;
+    return s;
+}
+
+function showAns (e) {
+    if(e != null && e.keyCode != 78) return;
+    var ans_div = document.getElementById('answer');
+    if(ans_div.style.visibility == "visible"){
+	ans_div.style.visibility = "hidden";
+	randomize();		
+	document.getElementById('elbtn').innerHTML = "Show Surah's Name";
+	}
+	else {		
+   		ans_div.style.visibility = "visible";
+   		document.getElementById('elbtn').innerHTML = "Randomize Surah";
+	}
+}
+
+function showShortcuts() {
+	var map = {
+		"Next Verse": "N",
+		"Show Surah's Name": "N"
+	};
+	var str = "";
+	for (var key in map) {
+		str += key + ": "+ map[key] + "\n";
+	}
+	alert(str, 'ay 7aga');
+}
+
+
+function ShowNextVerse() {
+	if (elobject.lastVerseChecker % 777) return;
+	elsora = elobject.sora / 1759 - 1;
+	elaya = (elobject.aya / 5719 - 2) + 1;
+	elobject.aya = (elaya + 2) * 5719;
+
+	isLastVerse(elsora, elaya);
+
+	var newdiv = document.createElement("div");	
+	newdiv.className  = "extra_aya";	
+
+	var newimg = document.createElement("img");
+	newimg.src = GetImageSource(elsora, elaya);
+
+	var newaudio = document.createElement('audio');
+	newaudio.setAttribute('src', GetMP3Source(elsora, elaya));
+	newaudio.innerHTML = '<source src="" type="audio/ogg">';
+	newaudio.setAttribute ('controls','controls');
+
+	newdiv.appendChild(newimg);
+	newdiv.appendChild(newaudio);
+	document.getElementById('elayat').appendChild(newdiv);
+
+}
+
+function isLastVerse (sora, aya) {
+	if(elobject.sizes[sora-1] == aya) {
+		document.getElementById('elba3dobtn').style.visibility = 'hidden';		
+		elobject.lastVerseChecker = getRandomNumberDivisbleBy(777) + 1;
+	}
+	else {
+	elobject.lastVerseChecker = getRandomNumberDivisbleBy(777);
+	}
+}
+
+function getRandomNumberDivisbleBy (num) {
+	var res = Math.floor((Math.random() * 1017)) * num;
+	return (res % (num+1)) ? res : getRandomNumberDivisbleBy(num);
+}
+
+function ResetUI () {
+	$( ".extra_aya" ).remove();
+	document.getElementById('elba3dobtn').style.visibility = 'visible';	
+}
+	</script>
+<!-- Histats.com  START (hidden counter)-->
+<script type="text/javascript">document.write(unescape("%3Cscript src=%27http://s10.histats.com/js15.js%27 type=%27text/javascript%27%3E%3C/script%3E"));</script>
+<a href="http://www.histats.com" target="_blank" title="counter free hit invisible" ><script  type="text/javascript" >
+try {Histats.start(1,2780746,4,0,0,0,"");
+Histats.track_hits();} catch(err){};
+</script></a>
+<noscript><a href="http://www.histats.com" target="_blank"><img  src="http://sstatic1.histats.com/0.gif?2780746&101" alt="counter free hit invisible" border="0"></a></noscript>
+<!-- Histats.com  END  -->
+	<style type="text/css">
+	.center{
+   margin-left: auto;
+    margin-right: auto;
+    width: 675px;
+	}
+	.fixed{
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+	}
+	</style>
+</head>
+<body onload="start()">
+<div id="thediv" class="center">
+
+
+
+
+
+	<div id="elayat">
+
+	<div class="aya">
+		<img id="elimg" src=""></img>
+		<audio id="player" controls>
+			 <source src="" type="audio/ogg" />
+		</audio>
+	</div>
+
+	</div>
+
+
+
+
+	<br/>
+	<button id="elbtn" onclick="showAns(null)">Show Surah's Name</button>
+	<button id="elba3dobtn" onclick="ShowNextVerse()">Show The Next Verse</button>
+	<div id="answer" style="visibility:hidden;">
+	<a id="elsora"><a>
+
+	</div>
+	
+    </div>
+
+    
+    <div class="fixed" style="width:100%">
+    <table style="width:100%">
+    	<td>
+    		<a href="https://docs.google.com/forms/d/1-xZCjXZEAqXMFRGAfjIswwXcNUw1pVtloejSr-0qj_s/viewform" target="_blank">Send Feedback or Request a Feature or Send us anything you want to say.</a>
+    	</td>
+    	<td>
+    		<button onclick="showShortcuts()" style="float:right;margin-right:10px;">Shortcuts</button>
+    	</td>
+    </table>
+	  
+    </div>
+
+</body>
+</html>
